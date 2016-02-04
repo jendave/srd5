@@ -1,0 +1,15 @@
+.*lock*
+.idea
+.*project
+.gradle
+build/
+output
+docbook.xsd
+lib/docbook-build
+lib/master.zip
+src/**/img/
+src/common/css/*
+fontconfig
+*.xpr
+~*
+*~

@@ -1,0 +1,336 @@
+project.version="0.0.1"
+
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+		maven {
+			url uri("${docbookBuildUri}")
+		}
+	}
+	
+	dependencies {
+		classpath 'commons-io:commons-io:2.4'
+		classpath 'de.obqo.gradle:gradle-lesscss-plugin:1.0-1.3.3'
+		classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+		classpath 'com.github.rwdalpe:docbook-build:0.0.1'
+	}
+}
+
+apply plugin: 'lesscss'
+apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+apply plugin: 'com.github.rwdalpe.docbookbuild'
+
+lesscss {
+	source = fileTree('src/common/less') {
+		include '*.less'
+	}
+	dest = 'src/common/css'
+	compress = true
+}
+
+
+clean {
+	doFirst {
+		delete outputDir
+	}
+}
+
+def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+formatter.setTimeZone(TimeZone.getTimeZone("UTC"))
+def buildTime = formatter.format(new Date())[0..-3] + ":00"
+
+task cleanValidation(type: Delete) {
+	doFirst {
+		delete "${outputDir}/${outputDirValidation}"
+	}
+}
+
+task cleanDocbook(type: Delete) {
+	doFirst {
+		delete "${outputDir}/${outputDirDocbook}"
+	}
+}
+
+task cleanPdf(type: Delete) {
+	doFirst {
+		delete "${outputDir}/${outputDirFo}", "${outputDir}/${outputDirPdf}"
+	}
+}
+
+task cleanHtmlSingle(type: Delete) {
+	doFirst {
+		delete "${outputDir}/${outputDirHtml}/${outputdirHtmlSingle}"
+	}
+}
+
+task cleanEpub(type: Delete) {
+	doFirst {
+		delete "${outputDir}/${outputDirEpub}"
+	}
+}
+
+task convert_glossary(type: org.asciidoctor.gradle.AsciidoctorTask, dependsOn: ["lesscss", "prepareAssets"]) {
+	def o = file("${project.outputDir}/${outputDirDocbook}/common")
+	
+	if(!o.exists()) {
+		o.mkdirs()
+	} else {
+		o.delete()
+		o.mkdirs()
+	}
+		
+	logDocuments = true
+	separateOutputDirs = false
+	sourceDir = file("${src}/common/")
+	sources { include "main_glossary.txt" }
+	outputDir = o
+	backends = ["docbook5"]
+	requires = [file("${buildDir}/docbook-build-assets/docbook-build-assets/asciidoctor_extensions.rb").absolutePath]
+	options = [ doctype: 'glossary' ]
+}
+
+// Currently intentionally not validating glossary because the schema doesn't allow for multiple glossterm in a glossentry,
+// which we use. Considering a schema extension since the stylesheets support it.
+// task validate_glossary(type: com.github.rwdalpe.docbookbuild.tasks.ValidateTask, dependsOn: ["convert_glossary"]) {
+// 	srcFiles = [file("${tasks['convert_glossary'].outputDir}/main_glossary.xml")]
+// 	catalogFiles = [file("src/common/catalog.xml")]
+// }
+
+def bookTaskNames = [:]
+def validateTaskNames = []
+def olinkTaskNames = []
+def epubTaskNames = []
+def pdfTaskNames = []
+def htmlTaskNames = []
+
+srcToplevelBooks.split(",").each { book ->
+
+	def bookTaskName = "convert_${book}"
+	bookTaskNames.put(book, bookTaskName)
+	
+	task(bookTaskName, type: org.asciidoctor.gradle.AsciidoctorTask, dependsOn: ["convert_glossary"])	{
+		def o = file("${project.outputDir}/${outputDirDocbook}/${book}/")
+	
+		if(!o.exists()) {
+			o.mkdirs()
+		} else {
+			o.delete()
+			o.mkdirs()
+		}
+		
+		logDocuments = true
+		separateOutputDirs = false
+		sourceDir = file("${src}/${book}/")
+		sources { include "${book}.txt" }
+		outputDir = o
+		backends = ["docbook5"]
+		requires = [file("${buildDir}/docbook-build-assets/docbook-build-assets/asciidoctor_extensions.rb").absolutePath]
+		options = [ doctype: 'book' ]
+	}
+
+	def preprocessTaskName = "preprocess_${book}"
+	task(preprocessTaskName, type: com.github.rwdalpe.docbookbuild.tasks.Xslt1PreprocessTask, dependsOn: [bookTaskName]) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		outputDir = file("${tasks[bookTaskNames[book]].outputDir}")
+		outputFileName = "${book}.xml"
+		catalogFiles = [file("${src}/common/catalog.xml")]
+		initialStylesheet = file("${buildDir}/docbook-build-assets/docbook-build-assets/asciidoc-book-id-append.xsl")
+		params =[
+			"book-id":"${book}",
+		]
+	}
+
+	def validateTaskName = "validate_${book}"
+	validateTaskNames.push(validateTaskName)
+	
+	task(validateTaskName, type: com.github.rwdalpe.docbookbuild.tasks.ValidateTask, dependsOn: [preprocessTaskName]) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		catalogFiles = [file("src/common/catalog.xml")]
+	}
+
+	def olinkTaskName = "olink_${book}"
+	olinkTaskNames.push(olinkTaskName)
+	
+	task(olinkTaskName, type: com.github.rwdalpe.docbookbuild.tasks.Xslt1PreprocessTask, dependsOn: [validateTaskName]) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		outputDir = file("${project.outputDir}/${outputDirDocbook}/sitemap")
+		catalogFiles = [file("${src}/common/catalog.xml")]
+		initialStylesheet = file("${buildDir}/docbook-build-assets/docbook-build-assets/olink-customizations.xsl")
+		params = [
+			"collect.xref.targets":"only",
+			"targets.filename":file("${project.outputDir}/${outputDirDocbook}/sitemap/${book}.db").absolutePath
+		]
+	}
+}
+
+srcToplevelBooks.split(",").each { book ->
+	def htmlTaskName = "html_${book}"
+	htmlTaskNames.push(htmlTaskName)
+
+	task(htmlTaskName, type: com.github.rwdalpe.docbookbuild.tasks.ToHtmlTask, dependsOn: olinkTaskNames) {
+		catalogFiles = [file("${src}/common/catalog.xml")]
+		inputFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		outputDir = file("${project.outputDir}/${outputDirHtml}/${outputDirHtmlSingle}/${book}/")
+		pipelineOptions = [
+			"syntax-highlighter":0,
+			"initial-stylesheet":file("${lib}/html-single-customizations.xsl"),
+		]
+		stylesheetParams = [
+			"NOW":buildTime,
+			"glossary.sort":1,
+			"book-name":"${book}",
+			"generate.meta.generator":0,
+			"docbook.css":"",
+			"toc.section.depth":"4",
+			"draft.mode":"${draft}",
+			"draft.watermark.image":"draft.png",
+			"html.stylesheets":"slicknav.css commonhtmlstyle.css commonhtmlstyle-print.css singlehtmlstyle.css singlehtmlstyle-print.css",
+			"use.extensions":1,
+			"output.dir":"${getOutputDir().absolutePath}/",
+			// "glossary.collection":"urn:x-twograves:glossary",
+			"project-name":"${projectName}",
+			"system-name":"${systemName}",
+			"table.cell.border.style":"none",
+			"table.borders.with.css":1
+			// "target.database.document":"${projectDir}/${lib}/html-linking-sitemap.xml",
+			// "current.docid":"${book}",
+		]
+		copy {
+			from "${buildDir}/docbook-build-assets/docbook-build-assets/docbook-xsl-ns-1.78.1/images/draft.png"
+			into getOutputDir()
+		}
+		copy {
+			from "${src}/${book}/images"
+			into "${getOutputDir()}/images"
+		}
+		copy {
+			from "${buildDir}/docbook-build-assets/docbook-build-assets/slicknav/"
+			from ("${src}/common/css/") {
+				include "*html*.css"
+			}
+			from "${src}/common/js/"
+			into getOutputDir()
+		}
+	}
+
+	def epubTaskName = "epub_${book}"
+	epubTaskNames.push(epubTaskName)
+
+	def epubAssetsTaskName = "epub_assets_${book}"
+	task(epubAssetsTaskName, type: com.github.rwdalpe.docbookbuild.tasks.Xslt1PreprocessTask, dependsOn: olinkTaskNames) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		outputDir = file("${project.outputDir}/${outputDirDocbook}/${book}/")
+		outputFileName = "${book}.xml.assets"
+		catalogFiles = [file("src/common/catalog.xml")]
+		initialStylesheet = file("${buildDir}/docbook-build-assets/docbook-build-assets/epub-get-assets.xsl")
+		
+		doLast {
+			def assetsFile = file("${getOutputDir()}/${book}.xml.assets")
+			if(assetsFile.length() > 0)
+			{
+				def assetsDir = file(tasks[epubTaskName].getBaseDir())
+				if(!assetsDir.exists()) {
+					assetsDir.mkdirs()
+				}
+				assetsFile.eachLine { line ->
+					if(!line.startsWith(".")) {
+						project.ant.get(src: line, dest: assetsDir)
+					}
+				}
+			}
+		}
+	}
+	
+	task(epubTaskName, type: com.github.rwdalpe.docbookbuild.tasks.ToEpubTask, dependsOn: [epubAssetsTaskName]) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		initialStylesheet = file("${buildDir}/docbook-build-assets/docbook-build-assets/epub-customizations.xsl")
+		// catalogFiles = [file("src/common/catalog.xml")]
+		params = [
+			"draft.mode":"yes",
+			"NOW":buildTime,
+			// "glossary.collection":"urn:x-twograves:glossary",
+			"book-name":"${book}",
+			"chapter.autolabel":0,
+			"chunk.section.depth":1,
+			"chunk.first.sections":0,
+			"draft.mode":"${draft}",
+			"draft.watermark.image":"draft.png",
+			"docbook.css.link":0,
+			"html.stylesheet":"epubstyle.css",
+			"NOW":buildTime,
+			"glossterm.auto.link":1,
+			"glossary.sort":1,
+			"generate.index":0,
+			"project-name":"${projectName}",
+			"system-name":"${systemName}",
+			"book-name":"${book}",
+			"table.cell.border.style":"none",
+			"table.borders.with.css":1
+			// "target.database.document":"${projectDir}/${lib}/epub-linking-sitemap.xml"
+		]
+		copy {
+			from ("${src}/${srcEpubCssFileDir}") {
+					include srcEpubCssFile
+			}
+			into getBaseDir()
+		}
+		copy {
+			from "${buildDir}/docbook-build-assets/docbook-build-assets/docbook-xsl-ns-1.78.1/images/draft.png"
+			into getBaseDir()
+		}
+		copy {
+			from "${src}/${book}/images"
+			into "${getBaseDir()}/images"
+		}
+		zipTo "${project.outputDir}/${outputDirEpub}/${book}/${book}.epub"
+	}
+	
+	def pdfTaskName = "pdf_${book}"
+	pdfTaskNames.push(pdfTaskName)
+	
+	task(pdfTaskName, type: com.github.rwdalpe.docbookbuild.tasks.ToPdfTask, dependsOn: olinkTaskNames) {
+		srcFile = file("${tasks[bookTaskNames[book]].outputDir}/${book}.xml")
+		initialStylesheet = file("${buildDir}/docbook-build-assets/docbook-build-assets/fo-customizations.xsl")
+		catalogFiles = [file("${src}/common/catalog.xml")]
+		params = [
+			"toc.indent.width":16,
+			"fop1.extensions":1,
+			"use.svg":1,
+			"email.delimiters.enabled":0,
+			"email.mailto.enabled":1,
+			"hyphenate":"true",
+			"body.start.indent":"0pt",
+			"draft.mode":"${draft}",
+			"draft.watermark.image":"draft.png",
+			// "glossary.collection":"urn:x-twograves:glossary",
+			"glossterm.auto.link":1,
+			"glossary.sort":1,
+			"ulink.show":0,
+			// "target.database.document":"${projectDir}/${lib}/epub-linking-sitemap.xml"
+		]
+		copy {
+			from "${buildDir}/docbook-build-assets/docbook-build-assets/docbook-xsl-ns-1.78.1/images/draft.png"
+			into outputDir
+		}
+		copy {
+			from "${src}/${book}/images"
+			into "${outputDir}/images"
+		}
+		pdfFile file("${project.outputDir}/${outputDirPdf}/${book}/${book}_basic.pdf")		
+	}
+}
+
+task convertAll() {}
+task validateAll() {}
+task pdfAll() {}
+task epubAll() {}
+task htmlAll() {}
+task buildAll() {}
+
+tasks.convertAll.dependsOn(bookTaskNames)
+tasks.validateAll.dependsOn(validateTaskNames)
+tasks.pdfAll.dependsOn(pdfTaskNames)
+tasks.epubAll.dependsOn(epubTaskNames)
+tasks.htmlAll.dependsOn(htmlTaskNames)
+tasks.buildAll.dependsOn(tasks.htmlAll, tasks.epubAll, tasks.pdfAll)

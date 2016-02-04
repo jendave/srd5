@@ -1,0 +1,290 @@
+@import "colors.less";
+@import "text.less";
+
+html {
+  font-family: @webBodyFont;
+  font-size: @webBaseSize;
+}
+body {
+  margin: 0px;
+  padding: 0px;
+}
+header>h1, header>h2, header>h3, header>h4, header>h5, header>h6 {
+  font-family: @webHeaderFont;
+  font-style: normal;
+  font-weight: 700;
+  margin-bottom: 0em;
+	font-variant: small-caps;
+}
+h1 {
+  font-size: 2.5em;
+}
+h2 {
+  font-size: 2.08em;
+}
+h3 {
+  font-size: 1.73em;
+}
+h4 {
+  font-size: 1.44em;
+}
+h5 {
+  font-size: 1.2em;
+}
+h6 {
+	font-size: 1em;
+}
+
+div.authorgroup {
+  font-size: .8em;
+}
+.author h3 {
+  font-family: Helvetica, Arial, "Liberation Sans", sans-serif;
+  font-weight: bold;
+  font-size: 1em;
+  margin-bottom: 0px;
+}
+div.bottom-matter {
+  font-size: .8em;
+  line-height: 1.2em;
+}
+div.bottom-matter p {
+    line-height: 1.2em;
+}
+div.toc>ul.toc {
+  font-size: .8em;
+  padding-right: .2em;
+}
+div.toc ul.toc {
+  list-style-type: none;
+  padding-left: 1.2em;
+}
+div.epigraph {
+  font-family: serif;
+  font-style: italic;
+  text-align: center;
+  font-size: 1.5em;
+  color: rgb(68, 68, 68);
+  max-width: 20em;
+  margin: 0px auto;
+}
+div.sidebar,div.warning,div.tip {
+  padding: 1em 1em;
+  border-left: 1.5em solid @sidebar;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+div.warning {
+  border-left: 1.5em solid @warning;
+}
+div.tip {
+  border-left: 1.5em solid @tip;
+}
+div.sidebar header h3,
+div.sidebar header h4,
+div.sidebar header h5,
+div.sidebar header h6,
+div.warning header h5,
+div.tip header h4 {
+	font-size: 1.73em;
+	margin-top: 0px;
+}
+div.sidebar > div:first-child p:first-child,
+div.warning > div:first-child p:first-child,
+div.tip > div:first-child p:first-child {
+  margin-top: 0px;
+}
+div.sidebar p:last-child,
+div.warning p:last-child,
+div.tip p:last-child {
+  margin-bottom: 0px;
+}
+div.mediaobject object {
+  width: 100%;
+}
+div.mediaobject img {
+  width: 100%;
+}
+.full-image div.title { 
+  width: 100%;
+  margin-top: 2em;
+  text-align: center;
+  font-style: italic;
+}
+
+div.settlement { 
+  margin: 1em 0;
+}
+div.settlement span.location {
+  display:block;
+  width:100%;
+  line-height: 1.6em;
+  font-variant: small-caps;
+  padding-left: .5em;
+  height: 1.6em;
+  font-weight: bold;
+  background-color: #000;
+}
+div.settlement span,
+div.settlement div {
+  margin-top: .75em;
+  margin-bottom: .75em;
+}
+div.settlement span.location a {
+  color: #fff;
+  line-height: 1.5em;
+}
+div.settlement span.attribute-name,
+div.settlement span.settlementqualities-title,
+div.settlement span.government-title,
+div.settlement span.settlementdanger-title,
+div.settlement span.populations-title,
+div.settlement span.settlementdisadvantages-title,
+div.settlement span.base-title,
+div.settlement span.casting-title,
+div.settlement span.limit-title,
+div.settlement span.minor-title,
+div.settlement span.medium-title,
+div.settlement span.major-title {
+  font-weight: bold;
+}
+div.settlement span.demographics-title,
+div.settlement span.marketplace-title {
+  display: block;
+  width: 100%;
+  line-height: 1.6em;
+  font-variant: small-caps;
+  padding-left: .5em;
+  height: 1.6em;
+  font-weight: bold;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+div.creature, div.abbrevcreature {
+  margin: 1em 0;
+}
+div.creature span,
+div.creature div,
+div.abbrevcreature span,
+div.abbrevcreature div {
+  margin-top: .75em;
+  margin-bottom: .75em;
+}
+div.creature div.creature-header,
+div.abbrevcreature div.abbrevcreature-header {
+  width: 100%;
+  line-height: 1.6em;
+  font-variant: small-caps;
+  font-weight: bold;
+  padding-left: .5em;
+  position: relative;
+  background-color: #000;
+  color: #fff;
+  z-index: -100;
+}
+div.creature div.creature-header span.challengerating-container,
+div.abbrevcreature div.abbrevcreature-header span.challengerating-container {
+  position: absolute;
+  right: .5em;
+  top: 0;
+  margin: 0;
+}
+div.creature div.xpreward-container,
+div.creature span.initiative-title,
+div.creature span.senses-title,
+div.creature span.aura-title,
+div.creature span.ac-title,
+div.creature span.hp-title,
+div.abbrevcreature span.hp-title,
+div.creature span.defensiveabilities-title,
+div.creature span.dr-title,
+div.creature span.immunity-title,
+div.creature span.resistance-title,
+div.creature span.sr-title,
+div.creature span.weaknesses-title,
+div.creature span.creaturespeeds-title,
+div.creature span.meleeattacks-title,
+div.creature span.rangedattacks-title,
+div.creature span.reach-title,
+div.creature span.space-title {
+  font-weight: bold;
+}
+div.creature span.defenses-title,
+div.creature span.offenses-title {
+  display: block;
+  width: 100%;
+  line-height: 1.6em;
+  font-variant: small-caps;
+  padding-left: .5em;
+  height: 1.6em;
+  font-weight: bold;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+div.creature span.save-body {
+  font-weight: bold;
+}
+
+div.abbrevcreature div.compactHPDesc-container,
+div.abbrevcreature div.compactHPDesc-container div,
+div.abbrevcreature div.compactHPDesc-container span {
+  margin: 0px;
+}
+div.abbrevcreature div.compactHPDesc-container div.hp {
+  display: inline-block;
+}
+
+span.term {
+	font-style: italic;
+}
+
+a {
+  color: @link;
+}
+a:visited {
+  color: @visited;
+}
+p {
+  line-height: 1.6em;
+}
+div.front-cover, div.back-cover {
+  display: none;
+}
+
+figure.table-wrapper, figure.informaltable-wrapper {
+	margin-left: 0;
+}
+
+table * {
+	margin: 0;
+	padding: 0;
+	font-size: (@webBaseSize*.95);
+	border: 0;
+}
+table tr:nth-child(even) {
+	background-color: @mainBg;
+}
+table td, table th {
+	padding: .2em .5em;
+}
+table th {
+	border-top: 1px solid @lightBg;
+	border-bottom: 1px solid @lightBg;
+}
+
+fieldset {
+	border: none;
+}
+
+@viewport {
+  zoom: 1.0;
+  width: device-width;
+  initial-scale: 1;
+}
+
+@-ms-viewport {
+  zoom: 1.0;
+  width: device-width;
+  initial-scale: 1;
+}

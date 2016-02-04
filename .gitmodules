@@ -1,0 +1,6 @@
+[submodule "docbook-build"]
+	path = docbook-build
+	url = https://github.com/rwdalpe/docbook-build.git
+[submodule "mdsrd5"]
+	path = mdsrd5
+	url = https://github.com/gguillotte/mdsrd5.git

@@ -1,0 +1,6 @@
+= The Asciidoc SRD5
+
+include::./legal.txt[]
+include::./races.txt[]
+include::./classes.txt[]
+include::./beyond-first.txt[]

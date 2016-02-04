@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "Entering docbook-build directory"
+cd docbook-build
+
+echo "Starting clean build"
+./gradlew clean build uploadArchives
+
+echo "Complete"
