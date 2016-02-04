@@ -1,0 +1,25 @@
+language: java
+env:
+  global:
+    - GH_REF: github.com/rwdalpe/srd5.git
+    - secure: "Y77waTr/Vz4V72pXlMriJ9MOLtBBSYltTW8+jwVJO2gvfMIJ+jxb8R5JYBHP1cJZyBEV8SARBERpGb77DFK1uv4T5PxBEeXwNB1zWa2THDbc66Dq7R9pR/NIp+4GhI0ozTAgcdH3HjA1V2D2DYJRw+Rbsn4RgddFthzBIQK4KrihI5pYTcUL/9Q/fvxRLW7/3gaZgmz9Efakwyb+sIP6WVKKETUyoNm2Hg9bVGqlJCbDhidGGp77UGcUyKn5UXx+GaM95OIJ51HzmeUN2WK/kLxHyESyX26cNUUKrn4bUWoccB0nlJsxDyuEW2lzdzG6eogrpQeAyts8OPxTvF6wMzMgYnPjb8N6duadwd53fjZyD/yUtDnbl8k3NoY5gosV2mrnH69aDPvZ2rfifgX68hQSEPG77DCIUGunduJw3/tA7LzwDJ2kAvb3p/HZ8+zP53pT+ZGRx4iElvjV4x6OB1XVuRQIWSITqtXbndzf6GJb3uVIrrlkU0mYXv8eFOR98Wq8LUYtC54jkhbMPZQ5C5g2pmbdwKf00Q3Fi8mc6DTsUuDD3g7x5nh9b3TiLhsMl+zkvilb4Tmanuc7xgbmEXF/Farr2K0cIT7npnA1lzoT1UNQ60mayavmfjbUV5t+pKXTK/BNQf6Sw7THKcmkbYyPTbZxhYLnCNdstYpU/XA="
+install: true
+before_script: git submodule init && git submodule update && ./build-deps && gradle clean validateAll
+jdk:
+  - oraclejdk8
+script: gradle buildAll
+deploy:
+  provider: releases
+  api_key:
+    secure: "HPy69AMF7g+Bxqdc53L2z0FhIKsa6p+4oi8jGgWyKgrAFZ3V1IPGmdH6je/iesA29p7oFOl3Ya0rhBSoV82vcx0DZLVC3fFhBurXNYviJO5zoBxWcxQn/WgL6vYC/GEv6dr0UQaZZaFBNU0V9zLbysuP9JZT+okh5Ov5NVL+u8U/QgUln6epUM85Eq9+1Yp1jTUuWe9Hlm9t+WMx3jyGJzIzzvem4aZw1M7VYOgYXyAX70OZT4VIy4vosw1zQZmlt3OaASbINNrXlnGBAU7D2aV3miR3YQDoUbbOc0c/6MOCPER363XL/mHClo/RizEl0zOVL7snaQTck6mZJJFeXBGyYN48PNj3nmSC882/m+NmSLrnO+lA4KNuRd8q2QkwJhUumFbcxfJbevDCrkK6hBk8cYZwGa/XUavXkZc+NiSGRev1JMgt/C5SpgxctiIm5im/t4ZulT+XsYVWlSb4Z6CPXT9iLk/Pu2+PeUmsfaq6fJSj6XmQlMF7VaPSBzwzEUs9KMQ8ViIIg8n6KT1IcNekitpAx7cbef+580RAv9P1HnJqau8ZyGpu8q+05WSDA1TxdwEs1OZiYhE6R+uPzSvheBZGmJZ3e+eoNeEai4Fr6EGsiny/IoY1awzfKZr7KATkd3lanVxEEl6ZpXj0fwc894ZXXuUHv/ow6EApM8g="
+  skip_cleanup: true
+  file_glob: true
+  file: 
+    - output/epub/**/*.epub
+    - output/pdf/**/*.pdf
+  on:
+    tags: true
+after_deploy: bash lib/deploy-pages.sh
+notifications:
+  email:
+  - rwdalpe@gmail.com
