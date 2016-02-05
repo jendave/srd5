@@ -1,112 +1,390 @@
-tableString = """Language
+tableString = """Name
 
-Typical Speakers
+Cost
 
-Script
+Damage
 
-Common
+Weight
 
-Humans
+Properties
 
-Common
+Simple Melee Weapons
 
-Dwarvish
+Club
 
-Dwarves
+1 sp
 
-Dwarvish
+1d4 bludgeoning
 
-Elvish
+2 lb.
 
-Elves
+Light
 
-Elvish
+Dagger
 
-Giant
+2 gp
 
-Ogres, giants
+1d4 piercing
 
-Dwarvish
+1 lb.
 
-Gnomish
+Finesse, light, thrown (range 20/60)
 
-Gnomes
+Greatclub
 
-Dwarvish
+2 sp
 
-Goblin
+1d8 bludgeoning
 
-Goblinoids
+10 lb.
 
-Dwarvish
+Two-handed
 
-Halfling
+Handaxe
 
-Halflings
+5 gp
 
-Common
+1d6 slashing
 
-Orc
+2 lb.
 
-Orcs
+Light, thrown (range 20/60)
 
-Dwarvish
+Javelin
 
-Exotic Languages
+5 sp
 
-Language
+1d6 piercing
 
-Typical Speakers
+2 lb.
 
-Script
+Thrown (range 30/120)
 
-Abyssal
+Light hammer
 
-Demons
+2 gp
 
-Infernal
+1d4 bludgeoning
 
-Celestial
+2 lb.
 
-Celestials
+Light, thrown (range 20/60)
 
-Celestial
+Mace
 
-Draconic
+5 gp
 
-Dragons, dragonborn
+1d6 bludgeoning
 
-Draconic
-
-Deep Speech
-
-Aboleths, cloakers
+4 lb.
 
 —
 
-Infernal
+Quarterstaff
 
-Devils
+2 sp
 
-Infernal
+1d6 bludgeoning
 
-Primordial
+4 lb.
 
-Elementals
+Versatile (1d8)
 
-Dwarvish
+Sickle
 
-Sylvan
+1 gp
 
-Fey creatures
+1d4 slashing
 
-Elvish
+2 lb.
 
-Undercommon
+Light
 
-Underworld traders
+Spear
 
-Elvish"""
+1 gp
+
+1d6 piercing
+
+3 lb.
+
+Thrown (range 20/60), versatile (1d8)
+
+Simple Ranged Weapons
+
+Crossbow, light
+
+25 gp
+
+1d8 piercing
+
+5 lb.
+
+Ammunition (range 80/320), loading, two-handed
+
+Dart
+
+5 cp
+
+1d4 piercing
+
+1/4 lb.
+
+Finesse, thrown (range 20/60)
+
+Shortbow
+
+25 gp
+
+1d6 piercing
+
+2 lb.
+
+Ammunition (range 80/320), two-handed
+
+Sling
+
+1 sp
+
+1d4 bludgeoning
+
+—
+
+Ammunition (range 30/120)
+
+Martial Melee Weapons
+
+Battleaxe
+
+10 gp
+
+1d8 slashing
+
+4 lb.
+
+Versatile (1d10)
+
+Flail
+
+10 gp
+
+1d8 bludgeoning
+
+2 lb.
+
+—
+
+Glaive
+
+20 gp
+
+1d10 slashing
+
+6 lb.
+
+Heavy, reach, two-handed
+
+Greataxe
+
+30 gp
+
+1d12 slashing
+
+7 lb.
+
+Heavy, two-handed
+
+Greatsword
+
+50 gp
+
+2d6 slashing
+
+6 lb.
+
+Heavy, two-handed
+
+Halberd
+
+20 gp
+
+1d10 slashing
+
+6 lb.
+
+Heavy, reach, two-handed
+
+Lance
+
+10 gp
+
+1d12 piercing
+
+6 lb.
+
+Reach, special
+
+Longsword
+
+15 gp
+
+1d8 slashing
+
+3 lb.
+
+Versatile (1d10)
+
+Maul
+
+10 gp
+
+2d6 bludgeoning
+
+10 lb.
+
+Heavy, two-handed
+
+Morningstar
+
+15 gp
+
+1d8 piercing
+
+4 lb.
+
+—
+
+Pike
+
+5 gp
+
+1d10 piercing
+
+18 lb.
+
+Heavy, reach, two-handed
+
+Rapier
+
+25 gp
+
+1d8 piercing
+
+2 lb.
+
+Finesse
+
+Scimitar
+
+25 gp
+
+1d6 slashing
+
+3 lb.
+
+Finesse, light
+
+Shortsword
+
+10 gp
+
+1d6 piercing
+
+2 lb.
+
+Finesse, light
+
+Trident
+
+5 gp
+
+1d6 piercing
+
+4 lb.
+
+Thrown (range 20/60), versatile (1d8)
+
+War pick
+
+5 gp
+
+1d8 piercing
+
+2 lb.
+
+—
+
+Warhammer
+
+15 gp
+
+1d8 bludgeoning
+
+2 lb.
+
+Versatile (1d10)
+
+Whip
+
+2 gp
+
+1d4 slashing
+
+3 lb.
+
+Finesse, reach
+
+Martial Ranged Weapons
+
+Blowgun
+
+10 gp
+
+1 piercing
+
+1 lb.
+
+Ammunition (range 25/100), loading
+
+Crossbow, hand
+
+75 gp
+
+1d6 piercing
+
+3 lb.
+
+Ammunition (range 30/120), light, loading
+
+Crossbow, heavy
+
+50 gp
+
+1d10 piercing
+
+18 lb.
+
+Ammunition (range 100/400), heavy, loading, two-handed
+
+Longbow
+
+50 gp
+
+1d8 piercing
+
+2 lb.
+
+Ammunition (range 150/600), heavy, two-handed
+
+Net
+
+1 gp
+
+—
+
+3 lb.
+
+Special, thrown (range 5/15)"""
 
 splits = tableString.split("\n\n")
 
@@ -114,10 +392,10 @@ splits = tableString.split("\n\n")
 # for i in range(len(insertBlanksAt)):
 # 	splits.insert(insertBlanksAt[i]-i, "")
 
-out = open('src/mdsrd5/tables/languages.csv', 'w')
+out = open('src/srd/tables/weapons.csv', 'w')
 
 counter = 0
-newLineAt = 2
+newLineAt = 4
 
 for split in splits:
 	out.write("\"" + split.strip() + "\"")
