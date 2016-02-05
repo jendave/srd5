@@ -23,6 +23,8 @@ cp -rf * for_git/
 
 cd for_git
 
+rm -rf for_git
+
 git config user.name "Travis CI"
 git config user.email "rwdalpe@gmail.com"
 
